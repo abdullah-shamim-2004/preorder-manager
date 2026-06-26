@@ -1,37 +1,35 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { useRouter } from "next/navigation"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Switch } from "@/components/ui/switch"
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
-import { ChevronLeft } from "lucide-react"
-import { toast } from "sonner" 
-
+} from "@/components/ui/select";
+import { ChevronLeft } from "lucide-react";
+import { toast } from "sonner";
 
 // Interface of preorderform data
 export interface PreorderFormData {
-  name: string
-  products: number
-  preorderWhen: string
-  startsAt: string
-  endsAt: string
-  status: boolean
+  name: string;
+  products: number;
+  preorderWhen: string;
+  startsAt: string;
+  endsAt: string;
+  status: boolean;
 }
 
 interface PreorderFormProps {
-  mode: "create" | "update"
-  initialData?: PreorderFormData & { id: string }
+  mode: "create" | "update";
+  initialData?: PreorderFormData & { id: string };
 }
-
 
 // default value for create mode
 const defaultValues: PreorderFormData = {
@@ -41,13 +39,11 @@ const defaultValues: PreorderFormData = {
   startsAt: "",
   endsAt: "",
   status: true,
-}
-
-
+};
 
 export default function PreorderForm({ mode, initialData }: PreorderFormProps) {
-  const router = useRouter()
-  const isUpdate = mode === "update"
+  const router = useRouter();
+  const isUpdate = mode === "update";
 
   const [form, setForm] = useState<PreorderFormData>({
     name: initialData?.name ?? defaultValues.name,
@@ -56,84 +52,81 @@ export default function PreorderForm({ mode, initialData }: PreorderFormProps) {
     startsAt: initialData?.startsAt ?? defaultValues.startsAt,
     endsAt: initialData?.endsAt ?? defaultValues.endsAt,
     status: initialData?.status ?? defaultValues.status,
-  })
+  });
 
-  const [loading, setLoading] = useState(false)
-  const [errors, setErrors] = useState<Partial<Record<keyof PreorderFormData, string>>>({})
-
-
+  const [loading, setLoading] = useState(false);
+  const [errors, setErrors] = useState<
+    Partial<Record<keyof PreorderFormData, string>>
+  >({});
 
   const validate = (): boolean => {
-    const newErrors: typeof errors = {}
+    const newErrors: typeof errors = {};
 
     if (!form.name.trim()) {
-      newErrors.name = "Name is required."
+      newErrors.name = "Name is required.";
     }
     if (!form.startsAt) {
-      newErrors.startsAt = "Start date is required."
+      newErrors.startsAt = "Start date is required.";
     }
     if (form.endsAt && form.startsAt && form.endsAt <= form.startsAt) {
-      newErrors.endsAt = "End date must be after start date."
+      newErrors.endsAt = "End date must be after start date.";
     }
 
-    setErrors(newErrors)
-    return Object.keys(newErrors).length === 0
-  }
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
-  // ---- Submit: create or update ----
+  // submit create form or update the form
 
   const handleSubmit = async () => {
-    if (!validate()) return
+    if (!validate()) return;
 
-    setLoading(true)
+    setLoading(true);
     try {
       const payload = {
         ...form,
-        // datetime-local string → ISO for DB
         startsAt: form.startsAt ? new Date(form.startsAt).toISOString() : null,
         endsAt: form.endsAt ? new Date(form.endsAt).toISOString() : null,
-      }
+      };
 
       const url = isUpdate
         ? `/api/preorders/${initialData!.id}`
-        : `/api/preorders`
+        : `/api/preorders`;
 
-      const method = isUpdate ? "PUT" : "POST"
+      const method = isUpdate ? "PUT" : "POST";
 
       const res = await fetch(url, {
         method,
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
-      })
+      });
 
       if (!res.ok) {
-        const err = await res.json()
-        throw new Error(err.message ?? "Something went wrong")
+        const err = await res.json();
+        throw new Error(err.message ?? "Something went wrong");
       }
 
-      toast.success(isUpdate ? "Preorder updated!" : "Preorder created!")
-      router.push("/preorders")
-      router.refresh() // table page এর server data refresh করো
+      toast.success(isUpdate ? "Preorder updated!" : "Preorder created!");
+      router.push("/dashboard");
+      router.refresh();
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Failed to save")
+      toast.error(err instanceof Error ? err.message : "Failed to save");
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
-  // ---- Field change helper ----
+  const update = <K extends keyof PreorderFormData>(
+    key: K,
+    value: PreorderFormData[K],
+  ) => {
+    setForm((prev) => ({ ...prev, [key]: value }));
 
-  const update = <K extends keyof PreorderFormData>(key: K, value: PreorderFormData[K]) => {
-    setForm((prev) => ({ ...prev, [key]: value }))
-    // Field touch করলে সেই error clear করো
-    if (errors[key]) setErrors((prev) => ({ ...prev, [key]: undefined }))
-  }
-
-  // ---- Render ----
+    if (errors[key]) setErrors((prev) => ({ ...prev, [key]: undefined }));
+  };
 
   return (
     <div className="min-h-screen bg-gray-100">
-
       {/* Top bar */}
       <div className="flex items-center justify-between px-6 py-4 bg-gray-100">
         <Button
@@ -163,7 +156,6 @@ export default function PreorderForm({ mode, initialData }: PreorderFormProps) {
       {/* Card */}
       <div className="max-w-3xl mx-auto px-6 pb-10">
         <div className="bg-white rounded-lg border border-gray-200">
-
           {/* Card header */}
           <div className="px-8 py-5 border-b border-gray-200">
             <h2 className="text-base font-semibold text-gray-900">
@@ -176,20 +168,22 @@ export default function PreorderForm({ mode, initialData }: PreorderFormProps) {
                 onClick={() => router.push("/preorders")}
               >
                 list
-              </span>.
+              </span>
+              .
             </p>
           </div>
 
           {/* Fields */}
           <div className="divide-y divide-gray-200">
-
             {/* Name */}
             <div className="px-8 py-6 grid grid-cols-2 gap-8 items-start">
               <div>
                 <Label className="text-sm font-semibold text-gray-900">
                   Name <span className="text-red-500">*</span>
                 </Label>
-                <p className="text-sm text-gray-500 mt-1">A label to recognize this preorder by.</p>
+                <p className="text-sm text-gray-500 mt-1">
+                  A label to recognize this preorder by.
+                </p>
               </div>
               <div>
                 <Input
@@ -207,7 +201,9 @@ export default function PreorderForm({ mode, initialData }: PreorderFormProps) {
             {/* Products */}
             <div className="px-8 py-6 grid grid-cols-2 gap-8 items-start">
               <div>
-                <Label className="text-sm font-semibold text-gray-900">Products</Label>
+                <Label className="text-sm font-semibold text-gray-900">
+                  Products
+                </Label>
                 <p className="text-sm text-gray-500 mt-1">
                   Number of products covered by this preorder.
                 </p>
@@ -227,7 +223,9 @@ export default function PreorderForm({ mode, initialData }: PreorderFormProps) {
             {/* Preorder when */}
             <div className="px-8 py-6 grid grid-cols-2 gap-8 items-start">
               <div>
-                <Label className="text-sm font-semibold text-gray-900">Preorder when</Label>
+                <Label className="text-sm font-semibold text-gray-900">
+                  Preorder when
+                </Label>
                 <p className="text-sm text-gray-500 mt-1">
                   When customers are allowed to preorder.
                 </p>
@@ -241,8 +239,12 @@ export default function PreorderForm({ mode, initialData }: PreorderFormProps) {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="REGARDLESS_OF_STOCK">regardless-of-stock</SelectItem>
-                    <SelectItem value="WHEN_OUT_OF_STOCK">when-out-of-stock</SelectItem>
+                    <SelectItem value="REGARDLESS_OF_STOCK">
+                      regardless-of-stock
+                    </SelectItem>
+                    <SelectItem value="WHEN_OUT_OF_STOCK">
+                      when-out-of-stock
+                    </SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -254,7 +256,9 @@ export default function PreorderForm({ mode, initialData }: PreorderFormProps) {
                 <Label className="text-sm font-semibold text-gray-900">
                   Starts at <span className="text-red-500">*</span>
                 </Label>
-                <p className="text-sm text-gray-500 mt-1">When the preorder window opens.</p>
+                <p className="text-sm text-gray-500 mt-1">
+                  When the preorder window opens.
+                </p>
               </div>
               <div>
                 <Input
@@ -272,8 +276,12 @@ export default function PreorderForm({ mode, initialData }: PreorderFormProps) {
             {/* Ends at */}
             <div className="px-8 py-6 grid grid-cols-2 gap-8 items-start">
               <div>
-                <Label className="text-sm font-semibold text-gray-900">Ends at</Label>
-                <p className="text-sm text-gray-500 mt-1">Leave empty for no end date.</p>
+                <Label className="text-sm font-semibold text-gray-900">
+                  Ends at
+                </Label>
+                <p className="text-sm text-gray-500 mt-1">
+                  Leave empty for no end date.
+                </p>
               </div>
               <div>
                 <Input
@@ -291,7 +299,9 @@ export default function PreorderForm({ mode, initialData }: PreorderFormProps) {
             {/* Status */}
             <div className="px-8 py-6 grid grid-cols-2 gap-8 items-start">
               <div>
-                <Label className="text-sm font-semibold text-gray-900">Status</Label>
+                <Label className="text-sm font-semibold text-gray-900">
+                  Status
+                </Label>
                 <p className="text-sm text-gray-500 mt-1">
                   Active preorders are visible to customers.
                 </p>
@@ -306,7 +316,6 @@ export default function PreorderForm({ mode, initialData }: PreorderFormProps) {
                 </span>
               </div>
             </div>
-
           </div>
         </div>
 
@@ -325,5 +334,5 @@ export default function PreorderForm({ mode, initialData }: PreorderFormProps) {
         </div>
       </div>
     </div>
-  )
+  );
 }
