@@ -16,7 +16,19 @@ export default async function preorderFormPage({ searchParams }: Props) {
     return (
       <PreorderForm
         mode="update"
-        initialData={{ ...preorder, id: preorder.id }}
+        initialData={{
+          id: preorder.id,
+          name: preorder.name,
+          products: preorder.products,
+          preorderWhen: preorder.preorderWhen as
+            | "REGARDLESS_OF_STOCK"
+            | "WHEN_OUT_OF_STOCK",
+          startsAt: preorder.startsAt.toISOString().slice(0, 16),
+          endsAt: preorder.endsAt
+            ? preorder.endsAt.toISOString().slice(0, 16)
+            : "",
+          status: preorder.status,
+        }}
       />
     );
   }
