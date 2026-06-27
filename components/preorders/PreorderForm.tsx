@@ -88,8 +88,7 @@ export default function PreorderForm({ mode, initialData }: PreorderFormProps) {
         startsAt: form.startsAt ? new Date(form.startsAt).toISOString() : null,
         endsAt: form.endsAt ? new Date(form.endsAt).toISOString() : null,
       };
-      console.log(payload);
-      
+      // console.log(payload);
 
       const url = isUpdate
         ? `/api/preorders/${initialData!.id}`
@@ -268,6 +267,7 @@ export default function PreorderForm({ mode, initialData }: PreorderFormProps) {
                   value={form.startsAt}
                   onChange={(e) => update("startsAt", e.target.value)}
                   className={errors.startsAt ? "border-red-500" : ""}
+                  suppressHydrationWarning
                 />
                 {errors.startsAt && (
                   <p className="text-xs text-red-500 mt-1">{errors.startsAt}</p>
@@ -291,6 +291,7 @@ export default function PreorderForm({ mode, initialData }: PreorderFormProps) {
                   value={form.endsAt}
                   onChange={(e) => update("endsAt", e.target.value)}
                   className={errors.endsAt ? "border-red-500" : ""}
+                  suppressHydrationWarning
                 />
                 {errors.endsAt && (
                   <p className="text-xs text-red-500 mt-1">{errors.endsAt}</p>
