@@ -1,4 +1,4 @@
-import PreorderForm from "@/components/shared/PreorderForm";
+import PreorderForm from "@/components/preorders/PreorderForm";
 import { db } from "@/lib/prisma";
 import { notFound } from "next/navigation";
 
@@ -9,7 +9,6 @@ interface Props {
 
 export default async function preorderFormPage({ searchParams }: Props) {
   const { id } = await searchParams;
-  // if there is a preorder , then use it as a update page
   if (id) {
     const preorder = await db.preorder.findUnique({ where: { id } });
     if (!preorder) notFound();

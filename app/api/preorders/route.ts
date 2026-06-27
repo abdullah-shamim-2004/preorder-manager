@@ -1,10 +1,12 @@
 import { db } from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
 
+
+// function for create new preorder
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    console.log(body);
+    // console.log(body);
     const { name, products, preorderWhen, startsAt, endsAt, status } = body;
 
     // Validation

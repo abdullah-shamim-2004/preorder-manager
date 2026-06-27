@@ -1,7 +1,6 @@
-// import Link from "next/link";
 import PreorderList from "@/components/preorders/preorder-list";
 import { db } from "@/lib/prisma";
-import React from "react";
+
 
 export default async function Dashboard() {
   const preorders = await db.preorder.findMany({

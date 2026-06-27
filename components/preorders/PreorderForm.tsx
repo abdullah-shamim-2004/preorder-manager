@@ -88,6 +88,8 @@ export default function PreorderForm({ mode, initialData }: PreorderFormProps) {
         startsAt: form.startsAt ? new Date(form.startsAt).toISOString() : null,
         endsAt: form.endsAt ? new Date(form.endsAt).toISOString() : null,
       };
+      console.log(payload);
+      
 
       const url = isUpdate
         ? `/api/preorders/${initialData!.id}`

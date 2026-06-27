@@ -21,7 +21,8 @@ import {
 
 // import PreorderActions from "./preorder-actions";
 import type { Preorder, FilterTab, SortField, SortOrder } from "./types";
-import { Switch } from "../ui/switch";
+import PreorderActions from "./preorder-actions";
+import StatusToggle from "./status-toggle";
 
 function formatDate(dateStr?: string | null) {
   if (!dateStr) return "—";
@@ -208,7 +209,7 @@ export default function PreorderList({
                 <th className="px-4 py-3 text-left font-semibold text-gray-700">
                   Status
                 </th>
-                <th className="w-36 px-4 py-3" >Action</th>
+                <th className="w-36 px-4 py-3">Action</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
@@ -234,10 +235,10 @@ export default function PreorderList({
                     {formatDate(p.endsAt)}
                   </td>
                   <td className="px-4 py-3 text-gray-600">
-                  <Switch checked={p.status} className="data-[state=checked]:bg-black!"/>
+                    <StatusToggle id={p.id} status={p.status} />
                   </td>
                   <td className="px-4 py-3">
-                    {/* <PreorderActions id={p.id} status={p.status} /> */}
+                    <PreorderActions id={p.id} status={p.status} />
                   </td>
                 </tr>
               ))}
