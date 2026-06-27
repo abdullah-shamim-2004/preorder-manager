@@ -2,7 +2,7 @@
 
 A preorder management tool built with Next.js. You can create preorders, set when they're active, and manage them from a simple list view. Built this to learn how to properly structure a Next.js app with server and client components, connect to a real database, and handle CRUD operations end to end.
 
-## Live Link
+## [Live-Link](https://preorder-manager-c8bi.vercel.app/)
 
 ## What it does
 
