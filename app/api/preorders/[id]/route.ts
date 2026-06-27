@@ -37,3 +37,27 @@ export async function PUT(req: NextRequest, { params }: RouteContext) {
     );
   }
 }
+
+// update the status with toggle button
+export async function PATCH(req: NextRequest, { params }: RouteContext) {
+  try {
+    const { id } = await params;
+    const body = await req.json();
+    if (!body.status) {
+      return NextResponse.json({ message: "Not found" }, { status: 404 });
+    }
+    const updateStatus = await db.preorder.update({
+      where: { id },
+      data: {
+        status: body.status,
+      },
+    });
+    return NextResponse.json(updateStatus);
+  } catch (error) {
+    console.error("[PREORDER_STATUS_PATCH]", error);
+    return NextResponse.json(
+      { message: "Internal server error" },
+      { status: 500 },
+    );
+  }
+}
