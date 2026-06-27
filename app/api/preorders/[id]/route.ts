@@ -43,8 +43,10 @@ export async function PATCH(req: NextRequest, { params }: RouteContext) {
   try {
     const { id } = await params;
     const body = await req.json();
-    if (!body.status) {
-      return NextResponse.json({ message: "Not found" }, { status: 404 });
+    // console.log(body);
+
+    if (body.status === undefined || typeof body.status !== "boolean") {
+      return NextResponse.json({ message: "Not found" }, { status: 400 });
     }
     const updateStatus = await db.preorder.update({
       where: { id },
@@ -59,5 +61,23 @@ export async function PATCH(req: NextRequest, { params }: RouteContext) {
       { message: "Internal server error" },
       { status: 500 },
     );
+  }
+}
+
+// Delate the preorder
+export async function DELETE(_req: NextRequest, { params }: RouteContext) {
+  try {
+    const { id } = await params
+ 
+    const existing = await db.preorder.findUnique({ where: { id } })
+    if (!existing) {
+      return NextResponse.json({ message: "Not found" }, { status: 404 })
+    }
+ 
+    await db.preorder.delete({ where: { id } })
+    return NextResponse.json({ message: "Deleted successfully" })
+  } catch (error) {
+    console.error("[PREORDER_DELETE]", error)
+    return NextResponse.json({ message: "Internal server error" }, { status: 500 })
   }
 }

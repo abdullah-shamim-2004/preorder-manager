@@ -238,7 +238,7 @@ export default function PreorderList({
                     <StatusToggle id={p.id} status={p.status} />
                   </td>
                   <td className="px-4 py-3">
-                    <PreorderActions id={p.id} status={p.status} />
+                    <PreorderActions id={p.id} />
                   </td>
                 </tr>
               ))}
